@@ -6,7 +6,7 @@ use ieee.std_logic_unsigned.all;
 entity main is
   port (
     clk : in std_logic;
-    reset : in std_logic;
+    reset, start : in std_logic;
     C, CC, V : in std_logic;
     E : out std_logic_vector(3 downto 0);
     L : out std_logic;
@@ -31,7 +31,7 @@ begin
     end if;
   end process;
 
-  process (PS, C, CC, V, m_state)
+  process (PS, C, CC, V, m_state, start)
   begin
     case PS is
       when S10 =>
@@ -45,13 +45,17 @@ begin
         elsif V = '1' then
           NS <= S2;
         else
-          NS <= S9;
+          if start = '0' then
+            NS <= S9;
+          else
+            NS <= S10;
+          end if;
         end if;
 
       when S9 =>
         E <= "1001";
         m_state <= "1001";
-        L <= '0';
+        L <= '1';
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -79,7 +83,7 @@ begin
       when S7 =>
         E <= "0111";
         m_state <= "0111";
-        L <= '0';
+        L <= '1';
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -107,7 +111,7 @@ begin
       when S5 =>
         E <= "0101";
         m_state <= "0101";
-        L <= '0';
+        L <= '1';
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -115,7 +119,11 @@ begin
         elsif V = '1' then
           NS <= S2;
         else
-          NS <= S4;
+          if start = '0' then
+            NS <= S4;
+          else
+            NS <= S5;
+          end if;
         end if;
 
       when S4 =>
@@ -135,7 +143,7 @@ begin
       when S3 =>
         E <= "0011";
         m_state <= "0011";
-        L <= '0';
+        L <= '1';
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -157,13 +165,17 @@ begin
         elsif V = '1' then
           NS <= S2;
         else
-          NS <= S1;
+          if start = '0' then
+            NS <= S1;
+          else
+            NS <= S2;
+          end if;
         end if;
 
       when S1 =>
         E <= "0001";
         m_state <= "0001";
-        L <= '0';
+        L <= '1';
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -204,7 +216,7 @@ begin
         monto_1 <= "1111111";
         monto_2 <= "0010010";
         monto_3 <= "1000000";
-        when "0010" =>
+      when "0010" =>
         monto_1 <= "1111111";
         monto_2 <= "0100100";
         monto_3 <= "1000000";
