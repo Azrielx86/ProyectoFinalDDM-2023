@@ -6,14 +6,15 @@ use ieee.std_logic_unsigned.all;
 entity main is
   port (
     clk : in std_logic;
-    reset, start, btn_start : in std_logic;
+    reset, btn_start : in std_logic;
     C, CC, V : in std_logic;
     E : out std_logic_vector(3 downto 0);
     L : out std_logic;
     monto_1 : out std_logic_vector(6 downto 0);
     monto_2 : out std_logic_vector(6 downto 0);
     monto_3 : out std_logic_vector(6 downto 0);
-    conteo : out std_logic_vector(6 downto 0)
+    conteo : out std_logic_vector(6 downto 0);
+    conteo_2 : out std_logic_vector(6 downto 0)
   );
 end entity;
 
@@ -22,7 +23,8 @@ architecture behavioral of main is
   signal PS, NS : Estados;
   signal div_clk : std_logic;
   signal m_state : std_logic_vector(3 downto 0);
-  signal sig_conteo : std_logic_vector(3 downto 0);
+  signal sig_conteo_1 : std_logic_vector(3 downto 0);
+  signal sig_conteo_2 : std_logic_vector(3 downto 0);
   signal btn_presionado : std_logic := '0';
 begin
   process (reset, div_clk)
@@ -34,14 +36,15 @@ begin
     end if;
   end process;
 
-  process (PS, C, CC, V, m_state, start, btn_start, btn_presionado)
+  process (PS, C, CC, V, m_state, btn_start, btn_presionado)
   begin
     case PS is
       when S10 =>
         E <= "1010";
         m_state <= "1010";
         L <= '1';
-        sig_conteo <= "1010";
+        sig_conteo_1 <= "0001";
+        sig_conteo_2 <= "0000";
         btn_presionado <= btn_start;
         if C = '1' then
           NS <= S10;
@@ -49,19 +52,18 @@ begin
           NS <= S5;
         elsif V = '1' then
           NS <= S2;
+        elsif btn_start = '0' then
+          NS <= S9;
         else
-          if btn_start = '0' then
-            NS <= S9;
-          else
-            NS <= S10;
-          end if;
+          NS <= S10;
         end if;
 
       when S9 =>
         E <= "1001";
         m_state <= "1001";
         L <= '1';
-        sig_conteo <= "1001";
+        sig_conteo_1 <= "1001";
+        sig_conteo_2 <= "1111";
         btn_presionado <= '0';
         if C = '1' then
           NS <= S10;
@@ -77,7 +79,8 @@ begin
         E <= "1000";
         m_state <= "1000";
         L <= '1';
-        sig_conteo <= "1000";
+        sig_conteo_1 <= "1000";
+        sig_conteo_2 <= "1111";
         btn_presionado <= '0';
         if C = '1' then
           NS <= S10;
@@ -93,7 +96,8 @@ begin
         E <= "0111";
         m_state <= "0111";
         L <= '1';
-        sig_conteo <= "0111";
+        sig_conteo_1 <= "0111";
+        sig_conteo_2 <= "1111";
         btn_presionado <= '0';
         if C = '1' then
           NS <= S10;
@@ -109,7 +113,8 @@ begin
         E <= "0110";
         m_state <= "0110";
         L <= '1';
-        sig_conteo <= "0110";
+        sig_conteo_1 <= "0110";
+        sig_conteo_2 <= "1111";
         btn_presionado <= '0';
         if C = '1' then
           NS <= S10;
@@ -123,9 +128,10 @@ begin
 
       when S5 =>
         E <= "0101";
-        m_state <= "0101";
+        m_state <= "0101" or not btn_presionado & "1" & not btn_presionado & "1";
         L <= '1';
-        sig_conteo <= "0101";
+        sig_conteo_1 <= "0101";
+        sig_conteo_2 <= "1111";
         btn_presionado <= btn_presionado and btn_start;
         if C = '1' then
           NS <= S10;
@@ -133,19 +139,18 @@ begin
           NS <= S5;
         elsif V = '1' then
           NS <= S2;
+        elsif btn_presionado = '0' then
+          NS <= S4;
         else
-          if btn_presionado = '0' then
-            NS <= S4;
-          else
-            NS <= S5;
-          end if;
+          NS <= S5;
         end if;
 
       when S4 =>
         E <= "0100";
         m_state <= "0100";
         L <= '1';
-        sig_conteo <= "0100";
+        sig_conteo_1 <= "0100";
+        sig_conteo_2 <= "1111";
         btn_presionado <= '0';
         if C = '1' then
           NS <= S10;
@@ -161,7 +166,8 @@ begin
         E <= "0011";
         m_state <= "0011";
         L <= '1';
-        sig_conteo <= "0011";
+        sig_conteo_1 <= "0011";
+        sig_conteo_2 <= "1111";
         btn_presionado <= '0';
         if C = '1' then
           NS <= S10;
@@ -175,9 +181,10 @@ begin
 
       when S2 =>
         E <= "0010";
-        m_state <= "0010";
+        m_state <= "0010" or not btn_presionado & not btn_presionado & "1" & not btn_presionado;
         L <= '1';
-        sig_conteo <= "0010";
+        sig_conteo_1 <= "0010";
+        sig_conteo_2 <= "1111";
         btn_presionado <= btn_presionado and btn_start;
         if C = '1' then
           NS <= S10;
@@ -185,19 +192,18 @@ begin
           NS <= S5;
         elsif V = '1' then
           NS <= S2;
+        elsif btn_presionado = '0' then
+          NS <= S1;
         else
-          if btn_presionado = '0' then
-            NS <= S1;
-          else
-            NS <= S2;
-          end if;
+          NS <= S2;
         end if;
 
       when S1 =>
         E <= "0001";
         m_state <= "0001";
         L <= '1';
-        sig_conteo <= "0001";
+        sig_conteo_1 <= "0001";
+        sig_conteo_2 <= "1111";
         btn_presionado <= '0';
         if C = '1' then
           NS <= S10;
@@ -213,8 +219,9 @@ begin
         E <= "0000";
         m_state <= "0000";
         L <= '0';
-        sig_conteo <= "1111";
-        btn_presionado <= '1';
+        sig_conteo_1 <= "1111";
+        sig_conteo_2 <= "1111";
+        btn_presionado <= btn_start;
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -229,7 +236,8 @@ begin
         E <= "0000";
         m_state <= "0000";
         L <= '0';
-        sig_conteo <= "1111";
+        sig_conteo_1 <= "1111";
+        sig_conteo_2 <= "1111";
         btn_presionado <= '0';
         NS <= S0;
     end case;
@@ -259,9 +267,14 @@ begin
     div_clk => div_clk
     );
 
-  cont : entity work.decoder (behavioral) port map(
-    input => sig_conteo,
+  cont_1 : entity work.decoder (behavioral) port map(
+    input => sig_conteo_1,
     output => conteo
-  );
+    );
+
+  cont_2 : entity work.decoder (behavioral) port map(
+    input => sig_conteo_2,
+    output => conteo_2
+    );
 
 end architecture;
