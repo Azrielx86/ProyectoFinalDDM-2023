@@ -12,7 +12,8 @@ entity main is
     L : out std_logic;
     monto_1 : out std_logic_vector(6 downto 0);
     monto_2 : out std_logic_vector(6 downto 0);
-    monto_3 : out std_logic_vector(6 downto 0)
+    monto_3 : out std_logic_vector(6 downto 0);
+    conteo : out std_logic_vector(6 downto 0)
   );
 end entity;
 
@@ -21,6 +22,7 @@ architecture behavioral of main is
   signal PS, NS : Estados;
   signal div_clk : std_logic;
   signal m_state : std_logic_vector(3 downto 0);
+  signal sig_conteo : std_logic_vector(3 downto 0);
 begin
   process (reset, div_clk)
   begin
@@ -38,6 +40,7 @@ begin
         E <= "1010";
         m_state <= "1010";
         L <= '1';
+        sig_conteo <= "1010";
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -56,6 +59,7 @@ begin
         E <= "1001";
         m_state <= "1001";
         L <= '1';
+        sig_conteo <= "1001";
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -67,9 +71,10 @@ begin
         end if;
 
       when S8 =>
-        E <= "1001";
-        m_state <= "1001";
+        E <= "1000";
+        m_state <= "1000";
         L <= '1';
+        sig_conteo <= "1000";
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -84,6 +89,7 @@ begin
         E <= "0111";
         m_state <= "0111";
         L <= '1';
+        sig_conteo <= "0111";
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -98,6 +104,7 @@ begin
         E <= "0110";
         m_state <= "0110";
         L <= '1';
+        sig_conteo <= "0110";
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -112,6 +119,7 @@ begin
         E <= "0101";
         m_state <= "0101";
         L <= '1';
+        sig_conteo <= "0101";
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -130,6 +138,7 @@ begin
         E <= "0100";
         m_state <= "0100";
         L <= '1';
+        sig_conteo <= "0100";
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -144,6 +153,7 @@ begin
         E <= "0011";
         m_state <= "0011";
         L <= '1';
+        sig_conteo <= "0011";
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -158,6 +168,7 @@ begin
         E <= "0010";
         m_state <= "0010";
         L <= '1';
+        sig_conteo <= "0010";
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -176,6 +187,7 @@ begin
         E <= "0001";
         m_state <= "0001";
         L <= '1';
+        sig_conteo <= "0001";
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -189,7 +201,8 @@ begin
       when S0 =>
         E <= "0000";
         m_state <= "0000";
-        L <= '1';
+        L <= '0';
+        sig_conteo <= "1111";
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -203,7 +216,8 @@ begin
       when others =>
         E <= "0000";
         m_state <= "0000";
-        L <= '1';
+        L <= '0';
+        sig_conteo <= "1111";
         NS <= S0;
     end case;
 
@@ -227,13 +241,14 @@ begin
     end case;
   end process;
 
-  -- process (m_state, monto_1, monto_2, monto_3)
-  -- begin
-  -- end process;
-
   freq : entity work.DivisorFrecuencias (behavioral) port map(
     reloj => clk,
     div_clk => div_clk
     );
+
+  cont : entity work.decoder (behavioral) port map(
+    input => sig_conteo,
+    output => conteo
+  );
 
 end architecture;

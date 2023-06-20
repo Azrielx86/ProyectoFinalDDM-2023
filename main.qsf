@@ -64,8 +64,6 @@ set_location_assignment PIN_A9 -to E[2]
 set_location_assignment PIN_A10 -to E[1]
 set_location_assignment PIN_B10 -to E[0]
 set_location_assignment PIN_B11 -to L
-set_global_assignment -name VHDL_FILE DivisorFrecuencias.vhdl
-set_global_assignment -name VHDL_FILE main.vhdl
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name ENABLE_OCT_DONE ON
@@ -103,4 +101,14 @@ set_location_assignment PIN_D12 -to C
 set_location_assignment PIN_C11 -to CC
 set_location_assignment PIN_C10 -to V
 set_location_assignment PIN_F15 -to start
+set_global_assignment -name VHDL_FILE decoder.vhdl
+set_global_assignment -name VHDL_FILE DivisorFrecuencias.vhdl
+set_global_assignment -name VHDL_FILE main.vhdl
+set_location_assignment PIN_J20 -to conteo[6]
+set_location_assignment PIN_K20 -to conteo[5]
+set_location_assignment PIN_L18 -to conteo[4]
+set_location_assignment PIN_N18 -to conteo[3]
+set_location_assignment PIN_M20 -to conteo[2]
+set_location_assignment PIN_N19 -to conteo[1]
+set_location_assignment PIN_N20 -to conteo[0]
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
