@@ -6,7 +6,7 @@ use ieee.std_logic_unsigned.all;
 entity main is
   port (
     clk : in std_logic;
-    reset, start : in std_logic;
+    reset, start, btn_start : in std_logic;
     C, CC, V : in std_logic;
     E : out std_logic_vector(3 downto 0);
     L : out std_logic;
@@ -23,6 +23,7 @@ architecture behavioral of main is
   signal div_clk : std_logic;
   signal m_state : std_logic_vector(3 downto 0);
   signal sig_conteo : std_logic_vector(3 downto 0);
+  signal btn_presionado : std_logic := '0';
 begin
   process (reset, div_clk)
   begin
@@ -33,7 +34,7 @@ begin
     end if;
   end process;
 
-  process (PS, C, CC, V, m_state, start)
+  process (PS, C, CC, V, m_state, start, btn_start, btn_presionado)
   begin
     case PS is
       when S10 =>
@@ -41,6 +42,7 @@ begin
         m_state <= "1010";
         L <= '1';
         sig_conteo <= "1010";
+        btn_presionado <= btn_start;
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -48,7 +50,7 @@ begin
         elsif V = '1' then
           NS <= S2;
         else
-          if start = '0' then
+          if btn_start = '0' then
             NS <= S9;
           else
             NS <= S10;
@@ -60,6 +62,7 @@ begin
         m_state <= "1001";
         L <= '1';
         sig_conteo <= "1001";
+        btn_presionado <= '0';
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -75,6 +78,7 @@ begin
         m_state <= "1000";
         L <= '1';
         sig_conteo <= "1000";
+        btn_presionado <= '0';
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -90,6 +94,7 @@ begin
         m_state <= "0111";
         L <= '1';
         sig_conteo <= "0111";
+        btn_presionado <= '0';
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -105,6 +110,7 @@ begin
         m_state <= "0110";
         L <= '1';
         sig_conteo <= "0110";
+        btn_presionado <= '0';
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -120,6 +126,7 @@ begin
         m_state <= "0101";
         L <= '1';
         sig_conteo <= "0101";
+        btn_presionado <= btn_presionado and btn_start;
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -127,7 +134,7 @@ begin
         elsif V = '1' then
           NS <= S2;
         else
-          if start = '0' then
+          if btn_presionado = '0' then
             NS <= S4;
           else
             NS <= S5;
@@ -139,6 +146,7 @@ begin
         m_state <= "0100";
         L <= '1';
         sig_conteo <= "0100";
+        btn_presionado <= '0';
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -154,6 +162,7 @@ begin
         m_state <= "0011";
         L <= '1';
         sig_conteo <= "0011";
+        btn_presionado <= '0';
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -169,6 +178,7 @@ begin
         m_state <= "0010";
         L <= '1';
         sig_conteo <= "0010";
+        btn_presionado <= btn_presionado and btn_start;
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -176,7 +186,7 @@ begin
         elsif V = '1' then
           NS <= S2;
         else
-          if start = '0' then
+          if btn_presionado = '0' then
             NS <= S1;
           else
             NS <= S2;
@@ -188,6 +198,7 @@ begin
         m_state <= "0001";
         L <= '1';
         sig_conteo <= "0001";
+        btn_presionado <= '0';
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -203,6 +214,7 @@ begin
         m_state <= "0000";
         L <= '0';
         sig_conteo <= "1111";
+        btn_presionado <= '1';
         if C = '1' then
           NS <= S10;
         elsif CC = '1' then
@@ -218,6 +230,7 @@ begin
         m_state <= "0000";
         L <= '0';
         sig_conteo <= "1111";
+        btn_presionado <= '0';
         NS <= S0;
     end case;
 
